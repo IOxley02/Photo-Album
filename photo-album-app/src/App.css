@@ -1,0 +1,20 @@
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.navbar {
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 15vh;
+}
+
+.animateRefs {
+  text-align: center;
+  padding: 5vh;
+}
+
+.footer {
+  background-color: rgba(0, 0, 0, 0.2);
+}

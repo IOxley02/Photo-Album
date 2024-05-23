@@ -1,20 +1,83 @@
-.centered {
+
+
+body {
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
+  margin: 0;
+  height: 100vh;
+  background-color: papayawhip;
+
 }
 
-.navbar {
-  text-align: center;
-  font-size: 20px;
-  margin-bottom: 15vh;
+.carousel {
+  width: 60vw; /* Fixed width for the carousel container */
+  max-width: 100%;
 }
 
-.animateRefs {
-  text-align: center;
-  padding: 5vh;
+#headerContainer {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Allura', cursive;
 }
 
-.footer {
-  background-color: rgba(0, 0, 0, 0.2);
+
+.carousel-item img {
+  object-fit: cover;
+  object-position: center;
+  height: 85vh;
+  width: 40vh;
+  overflow: hidden;
+}
+
+.title {
+  margin-top: 40vh;
+}
+
+.title h1 {
+  font-size: 96px;
+}
+
+.title h2 {
+  font-size: 64px;
+}
+
+@media (max-width: 1180px) {
+  .title h1 {
+      font-size: 96px;
+      text-align: center;
+  }
+  .title h2 {
+      font-size: 48px;
+      text-align: center;
+  }
+  .carousel {
+      height: 100%;
+      width: 100%;
+      margin-right: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .title h1 {
+      font-size: 64px;
+  }
+  .title h2 {
+      font-size: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title h1 {
+      font-size: 48px;
+  }
+  .title h2 {
+      font-size: 24px;
+  }
+  .carousel {
+      height: 100%;
+      width: 70%;
+      margin-right: 20px;
+  }
 }

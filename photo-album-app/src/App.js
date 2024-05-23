@@ -5,14 +5,15 @@ import {
 } from "react-router-dom"
 
 import './App.css';
-import NavBar from "./NavBar"
+
+import Navbar from "./Navbar";
 
 function App() {
 
   return (
     <Router>
       <Fragment>
-        <NavBar />
+        <Navbar />
     </Fragment>
     </Router>
   );

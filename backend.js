@@ -28,12 +28,13 @@ function getDirectories(baseDirectory, directory) {
     let directoryList = [];
     const files = fs.readdirSync(directory);
     files.forEach(file => {
-        console.log('testing')
         const filePath = path.join(directory, file);
         const stats = fs.statSync(filePath);
         if (stats.isDirectory()) {
             const relativePath = path.relative(baseDirectory, filePath);
-            directoryList.push(`${relativePath.replace(/\\/g, '/')}`); // Add relative directory path to the list
+            if (relativePath !== 'Favorites') {
+                directoryList.push(`${relativePath.replace(/\\/g, '/')}`); // Add relative directory path to the list
+            }
         }
     });
     return directoryList;
@@ -50,16 +51,18 @@ app.get('/directories', (req, res) => {
     }
 });
 
-app.get('/photos', (req, res) => {
-    const photosDirectory = path.resolve(__dirname, 'photo-album-app/public/photos');
+app.get('/photos/:directory?', (req, res) => {
+    const baseDirectory = path.resolve(__dirname, 'photo-album-app/public/photos');
+    const directory = req.params.directory ? path.join(baseDirectory, req.params.directory) : baseDirectory;
     try {
-        const photos = getFiles(photosDirectory, photosDirectory);
+        const photos = getFiles(baseDirectory, directory);
         res.json(photos);
     } catch (error) {
         console.error('Error fetching photos:', error);
         res.status(500).json({ message: 'Error fetching photos', error });
     }
 });
+
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

@@ -5,13 +5,9 @@ import {
 
 import AnimatedRefs from './AnimatedRefs.js'
 
-const myNav = {
-    currentNav: 0,
-}
-
 const Navbar = () => {
 
-    const [fileNav, setFileNav] = useState('nav-link')
+    const [activeIndex, setActiveIndex] = useState(null)
     const [directories, setDirectories] = useState([]);
 
     useEffect(() => {
@@ -19,7 +15,6 @@ const Navbar = () => {
     }, []);
 
     useEffect(() => {
-        console.log(directories);
         makeNavbar()
     }, [directories]);
 
@@ -35,21 +30,29 @@ const Navbar = () => {
         }
     };
 
+    const updateNavbar = (index) => {
+        setActiveIndex(index);
+        console.log(activeIndex)
+    };
+
     const makeNavbar = () => {
         let navItems = [];
-        let count = 0;
         const directoriesLength = directories.length;
+        let count = 0;
     
         while (count < directoriesLength) {
             const ulItems = [];
             // Generate 15 <li> elements or less if the remaining items are fewer than 15
             for (let i = 0; i < 15 && count < directoriesLength; i++) {
-                const directory = directories[count++];
+                const directory = directories[count];
                 ulItems.push(
-                    <li className="nav-item" key={directory}>
-                        <a className="nav-link" href="#">{directory}</a>
+                    <li className="nav-item" key={directory} onClick={() => updateNavbar(i)} >
+                        <a className={`nav-link ${count === activeIndex ? 'nav-link active' : ''}`} href="#">
+                            {directory}
+                        </a>
                     </li>
                 );
+                count++;
             }
             // Push the <ul> element containing the <li> items into the navItems array
             navItems.push(
@@ -62,29 +65,15 @@ const Navbar = () => {
         return <>{navItems}</>;
     }
 
-    //keeps the active navbar equal to the page the user is on
-    const updateNavbar = (column) => {
-        if (myNav.currentNav === 0) {
-        } else if (myNav.currentNav === 1) {
-            setFileNav('nav-link')
-        }
-
-        if (column === 1) {
-            setFileNav('nav-link')
-        }
-        myNav.currentNav = column
-    }
-
     return (
         <Fragment>
             {/*Navbar */}
             <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
                 <div className="container">
-                    <Link to="/" className="navbar-brand" onClick={() => updateNavbar(0)}>
-                        <h1 className="py-2 ml-lg-2 mx-3">
-                            <i className="bi bi-heart">
-                            </i>
-                        </h1>
+                    <Link to="/" className="navbar-brand" onClick={() => updateNavbar(-2)}>
+                        <h3 className="nav-link">
+                            <i className="bi bi-heart"></i>
+                        </h3>
                     </Link>
                     <button className="navbar-toggler my-2" type="button" data-toggle="collapse" data-target="#navbarCollapse">
                         <span className="navbar-toggler-icon"></span>
@@ -92,6 +81,11 @@ const Navbar = () => {
                     <div className="collapse navbar-collapse flex-column align-items-center ml-lg-2 ml-0" id="navbarCollapse">
                         {makeNavbar()}
                     </div>
+                    <Link to="/" className="navbar-brand" onClick={() => updateNavbar(-1)}>
+                        <h3 className="nav-link">
+                            <i className="bi bi-folder-plus"></i>
+                        </h3>
+                    </Link>
                 </div>
             </nav>
 

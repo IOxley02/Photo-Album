@@ -1,25 +1,26 @@
-
-
 body {
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
   margin: 0;
-  height: 100vh;
   background-color: papayawhip;
-
+  font-family: 'Allura', cursive;
 }
 
 .carousel {
-  width: 60vw; /* Fixed width for the carousel container */
-  max-width: 100%;
+  height: 100%;
+  width: 100%;
 }
 
-#headerContainer {
+#favoritesHeader {
   display: flex;
   flex-direction: column;
-  font-family: 'Allura', cursive;
+}
+
+#favoritesBody {
+  text-align: center;
+  margin-top: 5vh;
 }
 
 
@@ -27,21 +28,49 @@ body {
   object-fit: cover;
   object-position: center;
   height: 85vh;
-  width: 40vh;
   overflow: hidden;
 }
 
 .title {
-  margin-top: 40vh;
+  margin-top: 20vh;
 }
 
-.title h1 {
+h1 {
   font-size: 96px;
 }
 
-.title h2 {
+h2 {
   font-size: 64px;
 }
+
+.photo-container {
+  cursor: pointer;
+  transition: transform 0.2s ease-out;
+}
+
+.photo-container:hover {
+  transform: scale(1.05); 
+}
+
+.photo-container.selected {
+  z-index: 1000;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.5);
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.photo-container.selected img {
+  max-width: 50%;
+  max-height: 50%;
+}
+
 
 @media (max-width: 1180px) {
   .title h1 {
@@ -51,11 +80,6 @@ body {
   .title h2 {
       font-size: 48px;
       text-align: center;
-  }
-  .carousel {
-      height: 100%;
-      width: 100%;
-      margin-right: 20px;
   }
 }
 
@@ -74,10 +98,5 @@ body {
   }
   .title h2 {
       font-size: 24px;
-  }
-  .carousel {
-      height: 100%;
-      width: 70%;
-      margin-right: 20px;
   }
 }

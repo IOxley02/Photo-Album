@@ -20,9 +20,13 @@ body {
 
 #favoritesBody {
   text-align: center;
-  margin-top: 5vh;
+  margin: 20px;
 }
 
+#galleryBody {
+  margin-top: 5vh;
+  margin: 20px;
+}
 
 .carousel-item img {
   object-fit: cover;
@@ -44,12 +48,13 @@ h2 {
 }
 
 .photo-container {
+  position: relative;
   cursor: pointer;
   transition: transform 0.2s ease-out;
 }
 
 .photo-container:hover {
-  transform: scale(1.05); 
+  transform: scale(1.05);
 }
 
 .photo-container.selected {
@@ -69,6 +74,21 @@ h2 {
 .photo-container.selected img {
   max-width: 50%;
   max-height: 50%;
+}
+
+.heart-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 1.5rem;
+  color: red;
+}
+
+.photo-container:hover .heart-icon {
+  transform: scale(0.95);
+}
+.heart-icon:hover {
+  transform: scale(1.05);
 }
 
 

@@ -1,11 +1,13 @@
 import React, { Fragment, useState, useEffect } from "react"
 import {
     Link,
+    useNavigate
 } from "react-router-dom"
 
 import AnimatedRefs from './AnimatedRefs.js'
 
 const Navbar = () => {
+    const navigate = useNavigate();
 
     const [activeIndex, setActiveIndex] = useState(null)
     const [directories, setDirectories] = useState([]);
@@ -32,7 +34,8 @@ const Navbar = () => {
 
     const updateNavbar = (index) => {
         setActiveIndex(index);
-        console.log(activeIndex)
+        console.log(index)
+        navigate(`/gallery/${directories[index]}`);
     };
 
     const makeNavbar = () => {
@@ -42,11 +45,11 @@ const Navbar = () => {
     
         while (count < directoriesLength) {
             const ulItems = [];
-            // Generate 15 <li> elements or less if the remaining items are fewer than 15
             for (let i = 0; i < 15 && count < directoriesLength; i++) {
                 const directory = directories[count];
+                const index = count;
                 ulItems.push(
-                    <li className="nav-item" key={directory} onClick={() => updateNavbar(i)} >
+                    <li className="nav-item" key={directory} onClick={() => updateNavbar(index)} >
                         <a className={`nav-link ${count === activeIndex ? 'nav-link active' : ''}`} href="#">
                             {directory}
                         </a>
@@ -54,7 +57,7 @@ const Navbar = () => {
                 );
                 count++;
             }
-            // Push the <ul> element containing the <li> items into the navItems array
+
             navItems.push(
                 <ul className="navbar-nav" key={`ul-${count}`}>
                     {ulItems}

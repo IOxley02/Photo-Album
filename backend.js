@@ -15,13 +15,26 @@ function getFiles(baseDirectory, directory) {
         const filePath = path.join(directory, file);
         const stats = fs.statSync(filePath);
         if (stats.isDirectory()) {
-            fileList = fileList.concat(getFiles(baseDirectory, filePath)); // Recursively get files in subdirectories
+            fileList = fileList.concat(getFiles(baseDirectory, filePath));
         } else {
             const relativePath = path.relative(baseDirectory, filePath);
-            fileList.push(`/photos/${relativePath.replace(/\\/g, '/')}`); // Add relative file path to the list
+            const extension = path.extname(file).toLowerCase();
+            if (['.jpg', '.jpeg', '.png', '.gif', '.bmp'].includes(extension)) {
+                fileList.push(`/photos/${relativePath.replace(/\\/g, '/')}`);
+            }
         }
     });
     return fileList;
+}
+
+function getFavorites(baseDirectory, directory) {
+    const favoritesFilePath = path.join(directory, 'Favorites.txt');
+    if (fs.existsSync(favoritesFilePath)) {
+        const favoritesContent = fs.readFileSync(favoritesFilePath, 'utf8');
+        return favoritesContent;
+    }
+
+    return '';
 }
 
 function getDirectories(baseDirectory, directory) {
@@ -33,7 +46,7 @@ function getDirectories(baseDirectory, directory) {
         if (stats.isDirectory()) {
             const relativePath = path.relative(baseDirectory, filePath);
             if (relativePath !== 'Favorites') {
-                directoryList.push(`${relativePath.replace(/\\/g, '/')}`); // Add relative directory path to the list
+                directoryList.push(`${relativePath.replace(/\\/g, '/')}`);
             }
         }
     });
@@ -60,6 +73,18 @@ app.get('/photos/:directory?', (req, res) => {
     } catch (error) {
         console.error('Error fetching photos:', error);
         res.status(500).json({ message: 'Error fetching photos', error });
+    }
+});
+
+app.get('/favorites/read/:directory?', (req, res) => {
+    const baseDirectory = path.resolve(__dirname, 'photo-album-app/public/photos');
+    const directory = req.params.directory ? path.join(baseDirectory, req.params.directory) : baseDirectory;
+    try {
+        const favorites = getFavorites(baseDirectory, directory);
+        res.json(favorites);
+    } catch (error) {
+        console.error('Error fetching favorites:', error);
+        res.status(500).json({ message: 'Error fetching favorites', error });
     }
 });
 

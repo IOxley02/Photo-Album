@@ -32,11 +32,14 @@ const Favorites = () => {
 
     const renderPhotoGrid = () => {
         return (
-            <div className="row mt-4">
+            <div className="row photo-grid mt-4">
                 {photos.map((photo, index) => (
                     <div className="col-6 col-md-4 col-lg-3 mb-4" key={index}>
                         <div className={`photo-container ${selectedPhoto === index ? 'selected' : ''}`} onClick={() => handlePhotoClick(index)}>
                             <img className="img-fluid" src={process.env.PUBLIC_URL + photo} alt={`Photo ${index}`} />
+                            <div className="heart-icon">
+                                <i className="bi bi-heart-fill"></i>
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -76,7 +79,8 @@ const Favorites = () => {
                 </div>
             </div>
 
-            <div className="container" id="favoritesBody">
+            <div id="favoritesBody">
+                <h1> Favorites </h1>
                 {renderPhotoGrid()}
             </div>
 

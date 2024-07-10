@@ -7,6 +7,7 @@ import {
 
 import Navbar from "./Navbar";
 import Favorites from "./Favorites";
+import Gallery from "./Gallery";
 
 import { AnimatePresence } from "framer-motion"
 
@@ -18,6 +19,7 @@ const AnimatedRefs = () => {
             <Switch location={location} key={location.pathname}>
                 <Route path='/navbar' element={<Navbar />} />
                 <Route path='/' element={<Favorites />} />
+                <Route path='/gallery/:year' element={<Gallery />} />
             </Switch>
         </AnimatePresence>
     )

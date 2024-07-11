@@ -34,7 +34,6 @@ const Navbar = () => {
 
     const updateNavbar = (index) => {
         setActiveIndex(index);
-        console.log(index)
         navigate(`/gallery/${directories[index]}`);
     };
 
@@ -50,7 +49,7 @@ const Navbar = () => {
                 const index = count;
                 ulItems.push(
                     <li className="nav-item" key={directory} onClick={() => updateNavbar(index)} >
-                        <a className={`nav-link ${count === activeIndex ? 'nav-link active' : ''}`} href="#">
+                        <a className={`${count === activeIndex ? 'nav-link active' : 'nav-link'}`} href="#">
                             {directory}
                         </a>
                     </li>

@@ -20,12 +20,13 @@ body {
 
 #favoritesBody {
   text-align: center;
-  margin: 20px;
+  margin: 10vw;
 }
 
 #galleryBody {
+  text-align: center;
   margin-top: 5vh;
-  margin: 20px;
+  margin: 10vw;
 }
 
 .carousel-item img {
@@ -86,9 +87,6 @@ h2 {
 
 .photo-container:hover .heart-icon {
   transform: scale(0.95);
-}
-.heart-icon:hover {
-  transform: scale(1.05);
 }
 
 

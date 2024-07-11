@@ -6,22 +6,31 @@ const Gallery = () => {
     const [photos, setPhotos] = useState([]);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
     const [favorites, setFavorites] = useState(null);
+    const [favoritesData, setFavoritesData] = useState(null)
 
 
     useEffect(() => {
         if (year) {
             getPhotos(year);
             getFavorites(year);
-            setFavorites(Array(photos.length).fill(false))
         }
     }, [year]);
 
     useEffect(() => {
-        setFavorites(Array(photos.length).fill(false)); 
-    }, [photos]); 
+        console.log(photos)
+        console.log(favorites)
+        const tempFavoritesData = Array(photos.length).fill(false);
+        photos.forEach((photoPath, photoIndex) => {
+            const photoFilename = photoPath.split('/').pop();
 
-    useEffect(() => {
-        console.log(favorites); 
+            favorites.forEach((favoritePath) => {
+                const favoriteFilename = favoritePath.split('/').pop();
+                if (photoFilename === favoriteFilename) {
+                    tempFavoritesData[photoIndex] = true;
+                }
+            });
+        })
+        setFavoritesData(tempFavoritesData)
     }, [favorites]); 
 
     const getPhotos = async (year) => {
@@ -39,7 +48,8 @@ const Gallery = () => {
         try {
             const response = await fetch(`http://localhost:5000/favorites/read/${year}`);
             const data = await response.json();
-            console.log(data)
+            const favoritesPhotos = data.map(photo => `${photo.substring(photo.indexOf('/'))}`);
+            setFavorites(favoritesPhotos)
         } catch (error) {
             console.error('Error fetching favorites:', error);
         }
@@ -49,11 +59,33 @@ const Gallery = () => {
         setSelectedPhoto(selectedPhoto === index ? null : index);
     };
 
-    const handleHeartClick = (index) => {
-        console.log(index)
-        const newFavorites = [...favorites];
-        newFavorites[index] = !newFavorites[index];
-        setFavorites(newFavorites);
+    const handleHeartClick = async (event, index) => {
+        event.stopPropagation();
+        const newFavoritesData = [...favoritesData];
+        newFavoritesData[index] = !newFavoritesData[index];
+        setFavoritesData(newFavoritesData);
+
+        let photoPath = photos[index].substring('/photos'.length);
+        const destination = '/Favorites' + photoPath;
+
+        try {
+            const response = await fetch('http://localhost:5000/favorites/write/addPhoto', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ photoPath, destination }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                console.log(result.message);
+            } else {
+                console.error('Error copying photo:', result.message);
+            }
+        } catch (error) {
+            console.error('Error copying photo:', error);
+        }
     };
 
     const renderPhotoGrid = () => {
@@ -63,8 +95,8 @@ const Gallery = () => {
                     <div className="col-6 col-md-4 col-lg-3 mb-4" key={index}>
                         <div className={`photo-container ${selectedPhoto === index ? 'selected' : ''}`} onClick={() => handlePhotoClick(index)}>
                             <img className="img-fluid" src={process.env.PUBLIC_URL + photo} alt={`Photo ${index}`} />
-                            <div className="heart-icon">
-                                <i className={`bi bi-heart ${favorites[index] === true ? 'bi bi-heart-fill' : 'bi bi-heart'}`} onClick={() => handleHeartClick(index)}></i>
+                            <div className="heart-icon" onClick={(event) => handleHeartClick(event, index)}>
+                                <i className={`${favoritesData[index] ? 'bi bi-heart-fill' : 'bi bi-heart'}`}></i>
                             </div>
                         </div>
                     </div>
@@ -75,10 +107,8 @@ const Gallery = () => {
 
     return (
         <div>
-            <div id="galleryHeader">
-                <h1>Hello World!</h1>
-            </div>
             <div id="galleryBody">
+                <h1> {year} </h1>
                 {renderPhotoGrid()}
             </div>
         </div>

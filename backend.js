@@ -2,11 +2,15 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
+const { promisify } = require('util');
+const copyFile = promisify(fs.copyFile);
 
 const app = express();
 const port = 5000;
+const baseDirectory = path.resolve(__dirname, 'photo-album-app/public/photos');
 
 app.use(cors());
+app.use(express.json()); // Middleware to parse JSON bodies
 
 function getFiles(baseDirectory, directory) {
     let fileList = [];
@@ -25,16 +29,6 @@ function getFiles(baseDirectory, directory) {
         }
     });
     return fileList;
-}
-
-function getFavorites(baseDirectory, directory) {
-    const favoritesFilePath = path.join(directory, 'Favorites.txt');
-    if (fs.existsSync(favoritesFilePath)) {
-        const favoritesContent = fs.readFileSync(favoritesFilePath, 'utf8');
-        return favoritesContent;
-    }
-
-    return '';
 }
 
 function getDirectories(baseDirectory, directory) {
@@ -65,7 +59,6 @@ app.get('/directories', (req, res) => {
 });
 
 app.get('/photos/:directory?', (req, res) => {
-    const baseDirectory = path.resolve(__dirname, 'photo-album-app/public/photos');
     const directory = req.params.directory ? path.join(baseDirectory, req.params.directory) : baseDirectory;
     try {
         const photos = getFiles(baseDirectory, directory);
@@ -77,10 +70,9 @@ app.get('/photos/:directory?', (req, res) => {
 });
 
 app.get('/favorites/read/:directory?', (req, res) => {
-    const baseDirectory = path.resolve(__dirname, 'photo-album-app/public/photos');
-    const directory = req.params.directory ? path.join(baseDirectory, req.params.directory) : baseDirectory;
+    const directory = req.params.directory ? path.join(baseDirectory,'/Favorites', req.params.directory) : baseDirectory;
     try {
-        const favorites = getFavorites(baseDirectory, directory);
+        const favorites = getFiles(baseDirectory, directory);
         res.json(favorites);
     } catch (error) {
         console.error('Error fetching favorites:', error);
@@ -88,6 +80,18 @@ app.get('/favorites/read/:directory?', (req, res) => {
     }
 });
 
+app.post('/favorites/write/addPhoto', (req, res) => {
+    const { photoPath, destination } = req.body;
+    const sourcePath = photoPath ? path.join(baseDirectory, photoPath) : baseDirectory;
+    const destPath = destination ? path.join(baseDirectory, destination) : baseDirectory;
+    fs.copyFile(sourcePath, destPath, (err) => {
+        if (err) {
+            console.error('Error copying file:', err);
+            return res.status(500).json({ message: 'Error copying file', error: err });
+        }
+        res.status(200).json({ message: 'File copied successfully' });
+    });
+});
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

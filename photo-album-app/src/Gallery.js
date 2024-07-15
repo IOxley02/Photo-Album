@@ -17,8 +17,6 @@ const Gallery = () => {
     }, [year]);
 
     useEffect(() => {
-        console.log(photos)
-        console.log(favorites)
         const tempFavoritesData = Array(photos.length).fill(false);
         photos.forEach((photoPath, photoIndex) => {
             const photoFilename = photoPath.split('/').pop();
@@ -62,30 +60,46 @@ const Gallery = () => {
     const handleHeartClick = async (event, index) => {
         event.stopPropagation();
         const newFavoritesData = [...favoritesData];
-        newFavoritesData[index] = !newFavoritesData[index];
-        setFavoritesData(newFavoritesData);
 
-        let photoPath = photos[index].substring('/photos'.length);
+        let photoPath = photos[index].replace('/photos', '');
+
         const destination = '/Favorites' + photoPath;
 
-        try {
-            const response = await fetch('http://localhost:5000/favorites/write/addPhoto', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ photoPath, destination }),
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                console.log(result.message);
-            } else {
-                console.error('Error copying photo:', result.message);
+        if (newFavoritesData[index] === false) {
+            try {
+                const response = await fetch('http://localhost:5000/favorites/write/addPhoto', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ photoPath, destination }),
+                });
+    
+                const result = await response.json();
+                if (response.ok) {
+                    console.log(result.message);
+                } else {
+                    console.error('Error copying photo:', result.message);
+                }
+            } catch (error) {
+                console.error('Error copying photo:', error);
             }
-        } catch (error) {
-            console.error('Error copying photo:', error);
+        } else {
+            try {
+                const response = await fetch('http://localhost:5000/favorites/write/deletePhoto', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ destination }),
+                });
+            } catch (error) {
+                console.error('Error deleting photo:', error);
+            }
         }
+
+        newFavoritesData[index] = !newFavoritesData[index];
+        setFavoritesData(newFavoritesData);
     };
 
     const renderPhotoGrid = () => {

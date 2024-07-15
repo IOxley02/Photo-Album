@@ -67,12 +67,22 @@ const Navbar = () => {
         return <>{navItems}</>;
     }
 
+    const openExplorer = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/open-explorer');
+            const data = await response.json();
+            console.log(data.message);
+        } catch (error) {
+            console.error('Error opening file explorer:', error);
+        }
+    };
+
     return (
         <Fragment>
             {/*Navbar */}
             <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
                 <div className="container">
-                    <Link to="/" className="navbar-brand" onClick={() => updateNavbar(-2)}>
+                    <Link to="/" className="navbar-brand" onClick={() => updateNavbar(-1)}>
                         <h3 className="nav-link">
                             <i className="bi bi-heart"></i>
                         </h3>
@@ -83,11 +93,11 @@ const Navbar = () => {
                     <div className="collapse navbar-collapse flex-column align-items-center ml-lg-2 ml-0" id="navbarCollapse">
                         {makeNavbar()}
                     </div>
-                    <Link to="/" className="navbar-brand" onClick={() => updateNavbar(-1)}>
+                    <li className="navbar-brand" onClick={() => openExplorer()}>
                         <h3 className="nav-link">
                             <i className="bi bi-folder-plus"></i>
                         </h3>
-                    </Link>
+                    </li>
                 </div>
             </nav>
 

@@ -3,20 +3,16 @@ import React, { Fragment, useState, useEffect } from "react";
 const Favorites = () => {
     const [photos, setPhotos] = useState([]);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
-    const [favorites, setFavorites] = useState(null);
+    const [favoritesData, setFavoritesData] = useState(null)
 
 
     useEffect(() => {
-        getPhotos();
+        getPhotos();    
     }, []);
 
     useEffect(() => {
-        setFavorites(Array(photos.length).fill(true)); 
+        setFavoritesData(Array(photos.length).fill(true)); 
     }, [photos]); 
-
-    useEffect(() => {
-        console.log(favorites); 
-    }, [favorites]); 
 
     const getPhotos = async () => {
         try {
@@ -48,7 +44,7 @@ const Favorites = () => {
                         <div className={`photo-container ${selectedPhoto === index ? 'selected' : ''}`} onClick={() => handlePhotoClick(index)}>
                             <img className="img-fluid" src={process.env.PUBLIC_URL + photo} alt={`Photo ${index}`} />
                             <div className="heart-icon" onClick={(event) => handleHeartClick(event, index)}>
-                                <i className={`${favorites[index] ? 'bi bi-heart-fill' : 'bi bi-heart'}`}></i>
+                                <i className={`${favoritesData[index] ? 'bi bi-heart-fill' : 'bi bi-heart'}`}></i>
                             </div>
                         </div>
                     </div>
@@ -61,11 +57,48 @@ const Favorites = () => {
         setSelectedPhoto(selectedPhoto === index ? null : index);
     };
 
-    const handleHeartClick = (event, index) => {
+    const handleHeartClick = async (event, index) => {
         event.stopPropagation();
-        const newFavorites = [...favorites];
-        newFavorites[index] = !newFavorites[index];
-        setFavorites(newFavorites);
+        const newFavoritesData = [...favoritesData];
+
+        let photoPath = photos[index].replace('/photos/Favorites', '');
+        let destination = photos[index].replace('/photos', '')
+        if (newFavoritesData[index] === false) {
+            try {
+                const response = await fetch('http://localhost:5000/favorites/write/addPhoto', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ photoPath, destination }),
+                });
+    
+                const result = await response.json();
+                if (response.ok) {
+                    console.log(result.message);
+                } else {
+                    console.error('Error copying photo:', result.message);
+                }
+            } catch (error) {
+                console.error('Error copying photo:', error);
+            }
+        } else {
+            try {
+                const response = await fetch('http://localhost:5000/favorites/write/deletePhoto', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ destination }),
+                });
+            } catch (error) {
+                console.error('Error deleting photo:', error);
+            }
+        }
+
+
+        newFavoritesData[index] = !newFavoritesData[index];
+        setFavoritesData(newFavoritesData);
     };
 
     return (

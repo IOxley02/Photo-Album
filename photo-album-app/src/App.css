@@ -40,6 +40,10 @@ body {
   margin-top: 20vh;
 }
 
+.navbar-brand {
+  cursor: pointer;
+}
+
 h1 {
   font-size: 96px;
 }

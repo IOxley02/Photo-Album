@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const { promisify } = require('util');
-const copyFile = promisify(fs.copyFile);
+const { exec } = require('child_process');
 
 const app = express();
 const port = 5000;
@@ -46,6 +46,17 @@ function getDirectories(baseDirectory, directory) {
     });
     return directoryList;
 }
+
+app.get('/open-explorer', (req, res) => {
+    const directory = path.resolve(__dirname, baseDirectory);
+    exec(`explorer "${directory}"`, (err) => {
+        if (err) {
+            console.error('Error opening file explorer:', err);
+            return res.status(500).json({ message: 'Error opening file explorer', error: err });
+        }
+        res.status(200).json({ message: 'File explorer opened successfully' });
+    });
+});
 
 app.get('/directories', (req, res) => {
     const photosDirectory = path.resolve(__dirname, 'photo-album-app/public/photos');
@@ -92,6 +103,19 @@ app.post('/favorites/write/addPhoto', (req, res) => {
         res.status(200).json({ message: 'File copied successfully' });
     });
 });
+
+app.post('/favorites/write/deletePhoto', (req, res) => {
+    const { destination } = req.body;
+    const sourcePath = destination ? path.join(baseDirectory, destination) : baseDirectory;
+    fs.rm(sourcePath, (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+            return res.status(500).json({ message: 'Error deleting file', error: err });
+        }
+        res.status(200).json({ message: 'File deleted successfully' });
+    })
+});
+
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
